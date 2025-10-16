@@ -1,5 +1,5 @@
 use anytype_rs::{Color, Icon, Type as AnytypeType};
-use nu_protocol::{CustomValue, Record, ShellError, Span, Value};
+use nu_protocol::{casing::Casing, CustomValue, Record, ShellError, Span, Value};
 use serde::{Deserialize, Serialize};
 
 /// Unified Custom Value for all Anytype entities
@@ -192,6 +192,8 @@ impl CustomValue for AnytypeValue {
         _self_span: Span,
         column_name: String,
         path_span: Span,
+        _sensitive: bool,
+        _casing: Casing,
     ) -> Result<Value, ShellError> {
         // Convert to record and access the field
         let record = self.to_base_value(path_span)?;
