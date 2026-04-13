@@ -18,6 +18,11 @@ pub struct Object {
     // Add more fields as needed
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct GetObjectResponse {
+    pub object: Object,
+}
+
 /// Response for listing objects
 #[derive(Debug, Deserialize)]
 pub struct ListObjectsResponse {
@@ -97,8 +102,10 @@ impl AnytypeClient {
 
     /// Get a specific object by ID
     pub async fn get_object(&self, space_id: &str, object_id: &str) -> Result<Object> {
-        self.get(&format!("/v1/spaces/{space_id}/objects/{object_id}"))
-            .await
+        let response: GetObjectResponse = self
+            .get(&format!("/v1/spaces/{space_id}/objects/{object_id}"))
+            .await?;
+        Ok(response.object)
     }
 
     /// Create a new object in a space
