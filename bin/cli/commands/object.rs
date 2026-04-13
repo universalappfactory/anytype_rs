@@ -42,6 +42,13 @@ pub enum ObjectCommand {
         #[arg(short, long)]
         body: Option<String>,
     },
+    /// Get a single object by ID from a space
+    Get {
+        /// Space ID
+        space_id: String,
+        /// Object ID to fetch
+        object_id: String,
+    },
     /// Delete an object in a space (archives it)
     Delete {
         /// Space ID
@@ -71,6 +78,10 @@ pub async fn handle_object_command(args: ObjectArgs) -> Result<()> {
             name,
             body,
         } => update_object(&client, &space_id, &object_id, name, body).await,
+        ObjectCommand::Get {
+            space_id,
+            object_id,
+        } => get_object(&client, &space_id, &object_id).await,
         ObjectCommand::Delete {
             space_id,
             object_id,
@@ -119,6 +130,17 @@ async fn list_objects(client: &AnytypeClient, space_id: &str, limit: u32) -> Res
     if total_objects > display_count {
         println!("💡 Use --limit {total_objects} to see more results");
     }
+
+    Ok(())
+}
+
+async fn get_object(client: &AnytypeClient, space_id: &str, object_id: &str) -> Result<()> {
+    let object = client
+        .get_object(space_id, object_id)
+        .await
+        .context("Failed to fetch object")?;
+
+    println!("{}", serde_json::to_string_pretty(&object)?);
 
     Ok(())
 }
